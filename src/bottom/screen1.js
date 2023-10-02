@@ -7,9 +7,7 @@ const screen1 = (navigation) => {
       <Text
       style ={{fontSize:30}}
       onPress={()=>{
-        navigation.openDrawer();
-        
-      }}
+        navigation.openDrawer();}}
       
       >screen1</Text>
     </View>

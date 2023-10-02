@@ -2,15 +2,18 @@ import { View, Text } from 'react-native'
 import React from 'react'
 import { createDrawerNavigator } from '@react-navigation/drawer'
 import Main from './Main';
+import Custom from './Custom';
 
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
   return (
-   <Drawer.Navigator drawerContent={props => <custom {...props}/>}>
+   <Drawer.Navigator>
     <Drawer.Screen name='Main' component={Main} options={{headerShown:true}} />
    </Drawer.Navigator>
   )
 }
 
 export default DrawerNavigator
+
+//drawerContent={props => <Custom {...props}/>}

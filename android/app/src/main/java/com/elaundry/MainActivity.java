@@ -19,24 +19,18 @@ public class MainActivity extends ReactActivity {
     return "elaundry";
   }
 
-  // @Override
-  //       protected List<ReactPackage> getPackages() {
-  //           return Arrays.<ReactPackage>asList(
-  //                   new MainReactPackage(),
-  //                   new SplashScreenReactPackage()  // Ensure this is added
-  //           );
 
 
  @Override
     protected void onCreate(Bundle savedInstanceState) {
        SplashScreen.show(this);  // The second parameter is whether to hide splash screen after react-native initialized. It is false by default.
         super.onCreate(savedInstanceState);
+        
+        
        
     }
 
-    
-
-
+  
 
  @Override
   protected ReactActivityDelegate createReactActivityDelegate() {

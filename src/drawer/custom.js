@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const custom = () => {
+const Custom = () => {
   return (
-    <View style ={{flex:1 , justifyContent:'center', alignItems: 'center', backgroundColor:'gray'}}>
+    <View style ={{flex:1 , justifyContent:'center', alignItems: 'center', backgroundColor:'white'}}>
       <Text>custom</Text>
     </View>
   )
 }
 
-export default custom
+export default Custom

@@ -4,11 +4,7 @@ import SafeAreaView from 'react-native-safe-area-view';
 import React, { useEffect } from 'react';
 import { View, Text } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
-
-
-
-
-
+import AppNavigator from './src/AppNavigator';
 
 const App = ()=>{
 
@@ -19,11 +15,9 @@ const App = ()=>{
   }, []);
 
   return(
-<View>
-  <Text>
-    Hello
-  </Text>
-</View>
+     
+        <AppNavigator/>
+     
 
   )
 }

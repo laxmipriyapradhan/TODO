@@ -4,7 +4,7 @@ import DrawerNavigator from '../drawer/DrawerNavigator'
 
 const Parent = () => {
   return (
-    <View> style={{flex:1}} 
+    <View  style={{flex:1}} > 
     <DrawerNavigator/>
     </View>
   )
