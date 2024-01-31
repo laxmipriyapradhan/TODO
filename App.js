@@ -1,25 +1,9 @@
-import SafeAreaView from 'react-native-safe-area-view';
+import {View, Text} from 'react-native';
+import React from 'react';
 
+// navigator
+import MainNavigator from './src/navigations/MainNavigator';
 
-import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
-import SplashScreen from 'react-native-splash-screen';
-import AppNavigator from './src/AppNavigator';
-
-const App = ()=>{
-
-  useEffect(() => {
-    setTimeout(() => {
-      SplashScreen.hide();
-    }, 3000);
-  }, []);
-
-  return(
-     
-        <AppNavigator/>
-     
-
-  )
+export default function App() {
+  return <MainNavigator />;
 }
-
-export default App;

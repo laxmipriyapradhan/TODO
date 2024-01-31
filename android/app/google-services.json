@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1035884389804",
+    "project_id": "meta-hub-6feeb",
+    "storage_bucket": "meta-hub-6feeb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035884389804:android:ae1def8765e85603584609",
+        "android_client_info": {
+          "package_name": "com.Rukkor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATGb1rTmxg0bxyleluAVf_5ipBKtYYTFE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

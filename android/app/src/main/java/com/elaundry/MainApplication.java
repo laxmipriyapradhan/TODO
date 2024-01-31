@@ -1,4 +1,4 @@
-package com.elaundry;
+package com.Rukkor;
 
 import android.app.Application;
 import com.facebook.react.PackageList;
