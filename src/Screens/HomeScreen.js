@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -7,241 +6,193 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
-  StatusBar,
   FlatList,
   Alert,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import {useRoute} from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 
 export default function HomeScreen() {
-  const [inputTextValue, setInputTextValue] = useState(null);
-  const [list, setList] = useState([]);
+  const [inputTitle, setInputTitle] = useState('');
+  const [inputDescription, setInputDescription] = useState('');
+  const [inputPriority, setInputPriority] = useState('');
+  const [inputTime, setInputTime] = useState('');
+
+  const [tasks, setTasks] = useState([]);
   const [isUpdateData, setIsUpdateData] = useState(false);
-  const [cardId, setCardid] = useState(null);
+  const [taskId, setTaskId] = useState(null);
 
   const route = useRoute();
-  const {email, uid} = route.params;
+  const { email, uid } = route.params;
 
   useEffect(() => {
-    getDatabase();
+    getTasksFromFirestore();
   }, []);
 
-  const getDatabase = async () => {
-    try {
+  const getTasksFromFirestore = () => {
+    const unsubscribe = firestore().collection('tasks').onSnapshot((snapshot) => {
+      const tasksData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setTasks(tasksData);
+    });
 
-      firestore().collection('todo').onSnapshot((snap) => {
-        const tempArray = []
-        snap.forEach((item) => {
-          tempArray.push({
-            ...item.data(),
-            id: item.id
-          });
-        })
-
-        setList(tempArray)
-      })
-
-      // // const data = await database().ref('todo').once('value');
-      // const data = await database()
-      //   .ref('todo')
-      //   .on('value', tempData => {
-      //     console.log(data);
-      //     setList(tempData.val());
-      //   });
-    } catch (err) {
-      console.log(err);
-    }
+    return () => unsubscribe();
   };
 
-  const handleAddData = async () => {
+  const handleAddTask = async () => {
     try {
-      if (inputTextValue.length > 0) {
+      if (inputTitle.length > 0 && inputDescription.length > 0 && inputPriority.length > 0 && inputTime.length > 0) {
+        await firestore().collection('tasks').add({
+          title: inputTitle,
+          description: inputDescription,
+          priority: inputPriority,
+          time: inputTime,
+        });
 
-        await firestore().collection('todo').add({
-          text: inputTextValue
-        })
-
-        setInputTextValue('')
-
-        // const index = list.length;
-        // const response = await database().ref(`todo/${index}`).set({
-        //   value: inputTextValue,
-        // });
-
-        // console.log(response);
-
-        // setInputTextValue('');
+        setInputTitle('');
+        setInputDescription('');
+        setInputPriority('');
+        setInputTime('');
       } else {
-        alert('Please Enter Value & Then Try Again');
+        Alert.alert('Error', 'Please fill in all fields');
       }
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  const handleUpdateData = async () => {
+  const handleUpdateTask = async () => {
     try {
-      if (inputTextValue.length > 0) {
+      if (inputTitle.length > 0 && inputDescription.length > 0 && inputPriority.length > 0 && inputTime.length > 0) {
+        await firestore().collection('tasks').doc(taskId).update({
+          title: inputTitle,
+          description: inputDescription,
+          priority: inputPriority,
+          time: inputTime,
+        });
 
-        await firestore().collection('todo').doc(cardId).update({
-          text: inputTextValue
-        })
-
-        setInputTextValue('');
-        setIsUpdateData(false)
-
-        // const response = await database()
-        //   .ref(`todo/${selectedCardIndex}`)
-        //   .update({
-        //     value: inputTextValue,
-        //   });
-
-        // console.log(response);
-        // setInputTextValue('');
-        // setIsUpdateData(false);
+        setInputTitle('');
+        setInputDescription('');
+        setInputPriority('');
+        setInputTime('');
+        setIsUpdateData(false);
+        setTaskId(null);
       } else {
-        alert('Please Enter Value & Then Try Again');
+        Alert.alert('Error', 'Please fill in all fields');
       }
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  const handleCardPress = (cardId, cardValue) => {
-    try {
-      setIsUpdateData(true);
-      setCardid(cardId);
-      setInputTextValue(cardValue);
-    } catch (err) {
-      console.log(err);
-    }
+  const handleTaskPress = (taskId, task) => {
+    setIsUpdateData(true);
+    setTaskId(taskId);
+    setInputTitle(task.title);
+    setInputDescription(task.description);
+    setInputPriority(task.priority);
+    setInputTime(task.time);
   };
 
-  const handleCardLongPress = (cardId, cardValue) => {
+  const handleDeleteTask = async (taskId) => {
     try {
-      Alert.alert('Alert', `Are You Sure To Delete ${cardValue} ?`, [
-        {
-          text: 'Cancel',
-          onPress: () => {
-            console.log('Cancel Is Press');
-          },
-        },
-        {
-          text: 'Ok',
-          onPress: async () => {
-            try {
-
-              await firestore().collection('todo').doc(cardId).delete();
-              setInputTextValue('');
-              setIsUpdateData(false);
-
-              // const response = await database()
-              //   .ref(`todo/${cardIndex}`)
-              //   .remove();
-
-
-            } catch (err) {
-              console.log(err);
-            }
-          },
-        },
-      ]);
-
-      // setIsUpdateData(true);
-      // setCardid(cardIndex);
-      // setInputTextValue(cardValue);
-    } catch (err) {
-      console.log(err);
+      await firestore().collection('tasks').doc(taskId).delete();
+    } catch (error) {
+      console.error(error);
     }
   };
 
   return (
     <View style={styles.container}>
-      {/* <Text>Eamil: {email}</Text>
-      <Text>UID: {uid} </Text> */}
-      <StatusBar hidden={true} />
-      <View>
-        <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: 'bold' }}>
-          Todo App
-        </Text>
-        <TextInput
-          style={styles.inputBox}
-          placeholder="Enter Any Value"
-          value={inputTextValue}
-          onChangeText={value => setInputTextValue(value)}
-        />
-        {!isUpdateData ? (
+      {/* <Text>Email: {email}</Text>
+      <Text>UID: {uid}</Text> */}
+
+      <TextInput
+        style={styles.inputBox}
+        placeholder="Title"
+        value={inputTitle}
+        onChangeText={value => setInputTitle(value)}
+      />
+      <TextInput
+        style={styles.inputBox}
+        placeholder="Description"
+        value={inputDescription}
+        onChangeText={value => setInputDescription(value)}
+      />
+      <TextInput
+        style={styles.inputBox}
+        placeholder="Priority"
+        value={inputPriority}
+        onChangeText={value => setInputPriority(value)}
+      />
+      <TextInput
+        style={styles.inputBox}
+        placeholder="Time"
+        value={inputTime}
+        onChangeText={value => setInputTime(value)}
+      />
+
+      {!isUpdateData ? (
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => handleAddTask()}>
+          <Text style={{ color: '#fff' }}>Add Task</Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => handleUpdateTask()}>
+          <Text style={{ color: '#fff' }}>Update Task</Text>
+        </TouchableOpacity>
+      )}
+
+      <FlatList
+        data={tasks}
+        renderItem={({ item }) => (
           <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => handleAddData()}>
-            <Text style={{ color: '#fff' }}>Add</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => handleUpdateData()}>
-            <Text style={{ color: '#fff' }}>Update</Text>
+            style={styles.taskCard}
+            onPress={() => handleTaskPress(item.id, item)}
+            onLongPress={() => handleDeleteTask(item.id)}>
+            <Text>{item.title}</Text>
+            <Text>{item.description}</Text>
+            <Text>{item.priority}</Text>
+            <Text>{item.time}</Text>
           </TouchableOpacity>
         )}
-      </View>
-
-      <View style={styles.cardContainer}>
-        <Text style={{ marginVertical: 20, fontSize: 20, fontWeight: 'bold' }}>
-          Todo List
-        </Text>
-
-        <FlatList
-          data={list}
-          renderItem={item => {
-            const cardIndex = item.index;
-            if (item.item !== null) {
-              return (
-                <TouchableOpacity
-                  style={styles.card}
-                  onPress={() => handleCardPress(item.item.id, item.item.text)}
-                  onLongPress={() =>
-                    handleCardLongPress(item.item.id, item.item.text)
-                  }>
-                  <Text>{item.item.text}</Text>
-                </TouchableOpacity>
-              );
-            }
-          }}
-        />
-      </View>
+        keyExtractor={(item) => item.id}
+      />
     </View>
   );
 }
-
-const { height, width } = Dimensions.get('screen');
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+    padding: 16,
   },
   inputBox: {
-    width: width - 30,
-    borderRadius: 15,
-    borderWidth: 2,
-    marginVertical: 10,
-    padding: 10,
+    width: Dimensions.get('window').width - 32,
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    marginBottom: 12,
+    paddingLeft: 8,
   },
   addButton: {
     backgroundColor: 'blue',
     alignItems: 'center',
     padding: 10,
-    borderRadius: 50,
-  },
-  cardContainer: {
-    marginVertical: 20,
-  },
-  card: {
-    backgroundColor: '#fff',
-    width: width - 40,
-    padding: 20,
-    borderRadius: 30,
+    borderRadius: 8,
     marginVertical: 10,
+  },
+  taskCard: {
+    backgroundColor: '#fff',
+    width: Dimensions.get('window').width - 32,
+    padding: 16,
+    borderRadius: 8,
+    marginVertical: 8,
   },
 });
